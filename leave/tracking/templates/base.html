@@ -1,0 +1,193 @@
+<!-- khora/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Leave Management System{% endblock %}</title>
+    <style>
+        :root {
+            --primary-green: #2d5f3f;
+            --light-green: #4a9960;
+            --lighter-green: #6fbf73;
+            --pale-green: #e8f5e9;
+            --primary-orange: #ff8c42;
+            --light-orange: #ffb380;
+            --pale-orange: #fff3e6;
+            --white: #ffffff;
+            --text-dark: #1a3a2a;
+            --text-light: #6b8e7f;
+            --border: #d4e4d8;
+            --shadow: rgba(45, 95, 63, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pale-green) 0%, var(--pale-orange) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary-orange);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-green);
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--primary-orange);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-orange);
+            transform: translateY(-2px);
+        }
+
+        .messages {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 0 2rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: var(--pale-green);
+            color: var(--primary-green);
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .alert-error {
+            background: #ffe5e5;
+            color: #c41e3a;
+            border-left: 4px solid #c41e3a;
+        }
+
+        .alert-warning {
+            background: var(--pale-orange);
+            color: #d97706;
+            border-left: 4px solid var(--primary-orange);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="logo">Leave<span>Track</span></a>
+            <ul class="nav-links">
+                {% if user.is_authenticated %}
+                    {% if user.role == 'admin' %}
+                        <li><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'leave_history' %}">All Requests</a></li>
+                    {% else %}
+                        <li><a href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'submit_leave' %}">Submit Leave</a></li>
+                        <li><a href="{% url 'leave_history' %}">My History</a></li>
+                    {% endif %}
+                    <li><span style="color: var(--text-light);">{{ user.username }}</span></li>
+                    <li><a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'login' %}" class="btn btn-primary">Login</a></li>
+                    <li><a href="{% url 'signup' %}" class="btn btn-secondary">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

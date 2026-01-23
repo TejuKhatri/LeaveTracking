@@ -1,0 +1,283 @@
+<!-- khora/templates/leave_history.html -->
+{% extends 'base.html' %}
+
+{% block title %}Leave History - Leave Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px var(--shadow);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+        color: var(--text-light);
+    }
+
+    .filter-section {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px var(--shadow);
+        margin-bottom: 2rem;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .filter-btn {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--border);
+        background: var(--white);
+        color: var(--text-dark);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        background: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+    }
+
+    .history-container {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px var(--shadow);
+    }
+
+    .request-card {
+        background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-green);
+        transition: transform 0.3s;
+    }
+
+    .request-card:hover {
+        transform: translateX(5px);
+    }
+
+    .request-card.pending {
+        border-left-color: var(--primary-orange);
+    }
+
+    .request-card.approved {
+        border-left-color: var(--light-green);
+    }
+
+    .request-card.rejected {
+        border-left-color: #c41e3a;
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .request-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .request-type {
+        font-weight: 600;
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    .request-user {
+        color: var(--text-light);
+        font-size: 0.95rem;
+    }
+
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .status-pending {
+        background: var(--primary-orange);
+        color: var(--white);
+    }
+
+    .status-approved {
+        background: var(--light-green);
+        color: var(--white);
+    }
+
+    .status-rejected {
+        background: #c41e3a;
+        color: var(--white);
+    }
+
+    .request-details {
+        color: var(--text-dark);
+        line-height: 1.8;
+    }
+
+    .request-details p {
+        margin: 0.3rem 0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-light);
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-green);
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        margin-top: 0.3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>📊 Leave Request History</h1>
+        <p>View and track all {% if user.role == 'admin' %}leave requests{% else %}your leave requests{% endif %}</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-number">{{ leave_requests.count }}</div>
+            <div class="stat-label">Total Requests</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ leave_requests|length|add:0 }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ leave_requests|length|add:0 }}</div>
+            <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ leave_requests|length|add:0 }}</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterRequests('all')">All Requests</button>
+            <button class="filter-btn" onclick="filterRequests('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterRequests('approved')">Approved</button>
+            <button class="filter-btn" onclick="filterRequests('rejected')">Rejected</button>
+        </div>
+    </div>
+
+    <div class="history-container">
+        {% if leave_requests %}
+            {% for request in leave_requests %}
+            <div class="request-card {{ request.status }}" data-status="{{ request.status }}">
+                <div class="request-header">
+                    <div class="request-info">
+                        <span class="request-type">{{ request.get_leave_type_display }}</span>
+                        {% if user.role == 'admin' %}
+                            <span class="request-user">by {{ request.user.username }}</span>
+                        {% endif %}
+                    </div>
+                    <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+                </div>
+                <div class="request-details">
+                    <p><strong>📅 Period:</strong> {{ request.start_date|date:"M d, Y" }} to {{ request.end_date|date:"M d, Y" }} <span style="color: var(--primary-orange);">({{ request.days_count }} days)</span></p>
+                    <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
+                    <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:"M d, Y H:i" }}</p>
+                    <p><strong>🔄 Last Updated:</strong> {{ request.updated_on|date:"M d, Y H:i" }}</p>
+                    {% if request.admin_comment %}
+                        <p><strong>💬 Admin Comment:</strong> {{ request.admin_comment }}</p>
+                    {% endif %}
+                    {% if request.user.department and user.role == 'admin' %}
+                        <p><strong>🏢 Department:</strong> {{ request.user.department }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>No Leave Requests Found</h3>
+                <p>{% if user.role == 'admin' %}No users have submitted leave requests yet{% else %}You haven't submitted any leave requests yet{% endif %}</p>
+                {% if user.role != 'admin' %}
+                    <a href="{% url 'submit_leave' %}" class="btn btn-primary" style="margin-top: 1rem;">Submit Your First Request</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function filterRequests(status) {
+    const cards = document.querySelectorAll('.request-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    cards.forEach(card => {
+        if (status === 'all' || card.dataset.status === status) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}
