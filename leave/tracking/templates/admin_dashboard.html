@@ -1,368 +1,416 @@
-<!-- khora/templates/admin_dashboard.html -->
 {% extends 'base.html' %}
 
-{% block title %}Admin Dashboard - Leave Management System{% endblock %}
+{% block title %}
+  Admin Dashboard - Leave Management System
+{% endblock %}
 
 {% block extra_css %}
-<style>
+  <style>
+    /* General Styles */
+    :root {
+      --primary-green: #2d6a4f;
+      --secondary-green: #9ae3b0;
+      --primary-orange: #f48c42;
+      --text-dark: #333;
+      --text-light: #6c757d;
+      --white: #fff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --pale-green: #b7e4c7;
+      --pale-orange: #ffe4b5;
+      --border-radius: 12px;
+      --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Dashboard Header */
     .dashboard-header {
-        background: var(--white);
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px var(--shadow);
-        margin-bottom: 2rem;
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 2rem;
+      text-align: center;
     }
-
+    
     .dashboard-header h1 {
-        color: var(--primary-green);
-        margin-bottom: 0.5rem;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+      font-weight: 600;
     }
-
+    
     .dashboard-header p {
-        color: var(--text-light);
+      color: var(--text-light);
+      font-size: 1.1rem;
     }
-
+    
+    /* Stats Grid */
     .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
-
+    
     .stat-card {
-        background: var(--white);
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 5px 20px var(--shadow);
-        border-left: 4px solid var(--primary-green);
-        transition: transform 0.3s;
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      border-left: 5px solid var(--primary-green);
+      transition: transform 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
     }
-
+    
     .stat-card:hover {
-        transform: translateY(-5px);
+      transform: translateY(-5px);
     }
-
+    
     .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--primary-green);
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary-green);
     }
-
+    
     .stat-label {
-        color: var(--text-light);
-        margin-top: 0.5rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+      font-size: 1rem;
     }
-
+    
+    /* Tab Buttons */
     .tabs {
-        background: var(--white);
-        padding: 1rem;
-        border-radius: 15px 15px 0 0;
-        box-shadow: 0 5px 20px var(--shadow);
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
+      background: var(--white);
+      padding: 1rem;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      box-shadow: var(--box-shadow);
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-
+    
     .tab-button {
-        padding: 0.8rem 1.5rem;
-        border: none;
-        background: transparent;
-        color: var(--text-light);
-        font-weight: 600;
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-        transition: all 0.3s;
+      padding: 1rem 2rem;
+      border: none;
+      background: transparent;
+      color: var(--text-light);
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      font-size: 1.1rem;
     }
-
+    
     .tab-button.active {
-        color: var(--primary-green);
-        border-bottom-color: var(--primary-green);
+      color: var(--primary-green);
+      border-bottom-color: var(--primary-green);
     }
-
+    
+    /* Tab Content */
     .tab-content {
-        background: var(--white);
-        padding: 2rem;
-        border-radius: 0 0 15px 15px;
-        box-shadow: 0 5px 20px var(--shadow);
-        display: none;
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      box-shadow: var(--box-shadow);
+      display: none;
     }
-
+    
     .tab-content.active {
-        display: block;
+      display: block;
     }
-
+    
+    /* Request Cards */
     .request-card {
-        background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 1rem;
-        border-left: 4px solid var(--primary-orange);
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 1.5rem;
+      border-left: 5px solid var(--primary-orange);
     }
-
+    
     .request-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-
+    
     .request-user {
-        font-weight: 600;
-        color: var(--primary-green);
-        font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-green);
+      font-size: 1.2rem;
     }
-
+    
     .status-badge {
-        padding: 0.4rem 1rem;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.85rem;
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-transform: capitalize;
     }
-
+    
     .status-pending {
-        background: var(--primary-orange);
-        color: var(--white);
+      background: var(--primary-orange);
+      color: var(--white);
     }
-
+    
     .status-approved {
-        background: var(--light-green);
-        color: var(--white);
+      background: var(--secondary-green);
+      color: var(--white);
     }
-
+    
     .status-rejected {
-        background: #c41e3a;
-        color: var(--white);
+      background: #c41e3a;
+      color: var(--white);
     }
-
+    
     .request-details {
-        color: var(--text-dark);
-        margin-bottom: 1rem;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
     }
-
+    
     .request-details p {
-        margin: 0.3rem 0;
+      margin: 0.5rem 0;
     }
-
+    
     .request-actions {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
-
+    
     .btn-small {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
     }
-
+    
     .btn-success {
-        background: var(--light-green);
-        color: var(--white);
+      background: var(--secondary-green);
+      color: var(--white);
     }
-
+    
     .btn-success:hover {
-        background: var(--lighter-green);
+      background: #99e1b5;
     }
-
+    
     .btn-danger {
-        background: #c41e3a;
-        color: var(--white);
+      background: #c41e3a;
+      color: var(--white);
     }
-
+    
     .btn-danger:hover {
-        background: #a01629;
+      background: #a01629;
     }
-
+    
     .empty-state {
-        text-align: center;
-        padding: 3rem;
-        color: var(--text-light);
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-light);
     }
-
+    
     .empty-state-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
+      font-size: 4rem;
+      margin-bottom: 1rem;
     }
-
+    
     .action-form {
-        margin-top: 1rem;
-        padding: 1rem;
-        background: var(--white);
-        border-radius: 8px;
-        border: 2px solid var(--border);
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--white);
+      border-radius: 8px;
+      border: 2px solid var(--primary-green);
     }
-
+    
     .form-group {
-        margin-bottom: 1rem;
+      margin-bottom: 1rem;
     }
-
+    
     .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--text-dark);
-        font-weight: 500;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+      font-weight: 500;
     }
-
+    
     .form-input {
-        width: 100%;
-        padding: 0.8rem;
-        border: 2px solid var(--border);
-        border-radius: 8px;
-        font-size: 0.95rem;
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--primary-green);
+      border-radius: 8px;
+      font-size: 0.95rem;
     }
-
+    
     .form-input:focus {
-        outline: none;
-        border-color: var(--primary-green);
+      outline: none;
+      border-color: var(--primary-green);
     }
-</style>
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+  <div class="container">
     <div class="dashboard-header">
-        <h1>Admin Dashboard 👨‍💼</h1>
-        <p>Manage and review leave requests from all users</p>
+      <h1>Admin Dashboard 👨‍💼</h1>
+      <p>Manage and review leave requests from all users</p>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-number">{{ pending_requests.count }}</div>
-            <div class="stat-label">Pending Requests</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ approved_requests.count }}</div>
-            <div class="stat-label">Approved Requests</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ rejected_requests.count }}</div>
-            <div class="stat-label">Rejected Requests</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ total_users }}</div>
-            <div class="stat-label">Total Users</div>
-        </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ pending_requests.count }}</div>
+        <div class="stat-label">Pending Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ approved_requests.count }}</div>
+        <div class="stat-label">Approved Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ rejected_requests.count }}</div>
+        <div class="stat-label">Rejected Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
     </div>
 
     <div class="tabs">
-        <button class="tab-button active" onclick="openTab(event, 'pending')">Pending ({{ pending_requests.count }})</button>
-        <button class="tab-button" onclick="openTab(event, 'approved')">Approved ({{ approved_requests.count }})</button>
-        <button class="tab-button" onclick="openTab(event, 'rejected')">Rejected ({{ rejected_requests.count }})</button>
+      <button class="tab-button active" onclick="openTab(event, 'pending')">Pending ({{ pending_requests.count }})</button>
+      <button class="tab-button" onclick="openTab(event, 'approved')">Approved ({{ approved_requests.count }})</button>
+      <button class="tab-button" onclick="openTab(event, 'rejected')">Rejected ({{ rejected_requests.count }})</button>
     </div>
 
     <div id="pending" class="tab-content active">
-        <h2 style="color: var(--primary-green); margin-bottom: 1rem;">Pending Requests</h2>
-        {% if pending_requests %}
-            {% for request in pending_requests %}
-            <div class="request-card">
-                <div class="request-header">
-                    <span class="request-user">👤 {{ request.user.username }}</span>
-                    <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
-                </div>
-                <div class="request-details">
-                    <p><strong>📋 Type:</strong> {{ request.get_leave_type_display }}</p>
-                    <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
-                    <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
-                    <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:"M d, Y H:i" }}</p>
-                    {% if request.user.department %}
-                        <p><strong>🏢 Department:</strong> {{ request.user.department }}</p>
-                    {% endif %}
-                </div>
-                <div class="request-actions">
-                    <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="status" value="approved">
-                        <button type="submit" class="btn btn-success btn-small">✓ Approve</button>
-                    </form>
-                    <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="status" value="rejected">
-                        <button type="submit" class="btn btn-danger btn-small">✗ Reject</button>
-                    </form>
-                    <a href="{% url 'delete_leave' request.id %}" class="btn btn-danger btn-small" onclick="return confirm('Are you sure you want to delete this leave request?')">🗑️ Delete</a>
-                </div>
+      <h2>Pending Requests</h2>
+      {% if pending_requests %}
+        {% for request in pending_requests %}
+          <div class="request-card">
+            <div class="request-header">
+              <span class="request-user">👤 {{ request.user.username }}</span>
+              <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">✅</div>
-                <h3>No Pending Requests</h3>
-                <p>All requests have been reviewed</p>
+            <div class="request-details">
+              <p>
+                <strong>📋 Type:</strong> {{ request.get_leave_type_display }}
+              </p>
+              <p>
+                <strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)
+              </p>
+              <p>
+                <strong>📝 Reason:</strong> {{ request.reason }}
+              </p>
+              <p>
+                <strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y H:i' }}
+              </p>
             </div>
-        {% endif %}
+            <div class="request-actions">
+              <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="approved" />
+                <button type="submit" class="btn btn-success btn-small">✓ Approve</button>
+              </form>
+              <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="rejected" />
+                <button type="submit" class="btn btn-danger btn-small">✗ Reject</button>
+              </form>
+              <a href="{% url 'delete_leave' request.id %}" class="btn btn-danger btn-small" onclick="return confirm('Are you sure you want to delete this leave request?')">🗑️ Delete</a>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">✅</div>
+          <h3>No Pending Requests</h3>
+          <p>All requests have been reviewed</p>
+        </div>
+      {% endif %}
     </div>
 
     <div id="approved" class="tab-content">
-        <h2 style="color: var(--primary-green); margin-bottom: 1rem;">Approved Requests</h2>
-        {% if approved_requests %}
-            {% for request in approved_requests %}
-            <div class="request-card">
-                <div class="request-header">
-                    <span class="request-user">👤 {{ request.user.username }}</span>
-                    <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
-                </div>
-                <div class="request-details">
-                    <p><strong>📋 Type:</strong> {{ request.get_leave_type_display }}</p>
-                    <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
-                    <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
-                    <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:"M d, Y H:i" }}</p>
-                    {% if request.admin_comment %}
-                        <p><strong>💬 Comment:</strong> {{ request.admin_comment }}</p>
-                    {% endif %}
-                </div>
+      <h2>Approved Requests</h2>
+      {% if approved_requests %}
+        {% for request in approved_requests %}
+          <div class="request-card">
+            <div class="request-header">
+              <span class="request-user">👤 {{ request.user.username }}</span>
+              <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <h3>No Approved Requests</h3>
+            <div class="request-details">
+              <p>
+                <strong>📋 Type:</strong> {{ request.get_leave_type_display }}
+              </p>
+              <p>
+                <strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)
+              </p>
+              <p>
+                <strong>📝 Reason:</strong> {{ request.reason }}
+              </p>
+              <p>
+                <strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y H:i' }}
+              </p>
             </div>
-        {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <h3>No Approved Requests</h3>
+        </div>
+      {% endif %}
     </div>
 
     <div id="rejected" class="tab-content">
-        <h2 style="color: var(--primary-green); margin-bottom: 1rem;">Rejected Requests</h2>
-        {% if rejected_requests %}
-            {% for request in rejected_requests %}
-            <div class="request-card">
-                <div class="request-header">
-                    <span class="request-user">👤 {{ request.user.username }}</span>
-                    <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
-                </div>
-                <div class="request-details">
-                    <p><strong>📋 Type:</strong> {{ request.get_leave_type_display }}</p>
-                    <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
-                    <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
-                    <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:"M d, Y H:i" }}</p>
-                    {% if request.admin_comment %}
-                        <p><strong>💬 Comment:</strong> {{ request.admin_comment }}</p>
-                    {% endif %}
-                </div>
+      <h2>Rejected Requests</h2>
+      {% if rejected_requests %}
+        {% for request in rejected_requests %}
+          <div class="request-card">
+            <div class="request-header">
+              <span class="request-user">👤 {{ request.user.username }}</span>
+              <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <h3>No Rejected Requests</h3>
+            <div class="request-details">
+              <p>
+                <strong>📋 Type:</strong> {{ request.get_leave_type_display }}
+              </p>
+              <p>
+                <strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)
+              </p>
+              <p>
+                <strong>📝 Reason:</strong> {{ request.reason }}
+              </p>
+              <p>
+                <strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y H:i' }}
+              </p>
             </div>
-        {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <h3>No Rejected Requests</h3>
+        </div>
+      {% endif %}
     </div>
-</div>
+  </div>
 
-<script>
-function openTab(evt, tabName) {
-    var i, tabcontent, tabbuttons;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].classList.remove("active");
+  <script>
+    function openTab(evt, tabName) {
+      var i, tabcontent, tabbuttons
+      tabcontent = document.getElementsByClassName('tab-content')
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove('active')
+      }
+      tabbuttons = document.getElementsByClassName('tab-button')
+      for (i = 0; i < tabbuttons.length; i++) {
+        tabbuttons[i].classList.remove('active')
+      }
+      document.getElementById(tabName).classList.add('active')
+      evt.currentTarget.classList.add('active')
     }
-    tabbuttons = document.getElementsByClassName("tab-button");
-    for (i = 0; i < tabbuttons.length; i++) {
-        tabbuttons[i].classList.remove("active");
-    }
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
-}
-</script>
+  </script>
 {% endblock %}
