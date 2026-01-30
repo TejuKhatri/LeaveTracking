@@ -1,0 +1,604 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Leave Tracking - Admin Panel
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* Admin Tracking Page Styles */
+    .tracking-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tracking-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      color: var(--white);
+      padding: 2.5rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px var(--shadow);
+      margin-bottom: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tracking-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .tracking-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tracking-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+    }
+
+    .filter-section {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .filter-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-green);
+    }
+
+    .filter-header h3 {
+      font-size: 1.3rem;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 0.9rem;
+    }
+
+    .filter-input {
+      padding: 0.8rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(45, 95, 63, 0.1);
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.8rem 1.5rem;
+      border: 2px solid var(--primary-green);
+      background: var(--white);
+      color: var(--primary-green);
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary-green);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .filter-btn.secondary {
+      border-color: var(--primary-orange);
+      color: var(--primary-orange);
+    }
+
+    .filter-btn.secondary:hover, .filter-btn.secondary.active {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+
+    .tracking-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-green), var(--primary-orange));
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--primary-green);
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+
+    .tracking-content {
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 6px 20px var(--shadow);
+      overflow: hidden;
+    }
+
+    .content-header {
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+      padding: 1.5rem;
+      border-bottom: 3px solid var(--primary-green);
+    }
+
+    .content-header h3 {
+      color: var(--primary-green);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tracking-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tracking-table th {
+      background: var(--primary-green);
+      color: var(--white);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .tracking-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .tracking-table tr:hover {
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+    }
+
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-align: center;
+      display: inline-block;
+      min-width: 80px;
+    }
+
+    .status-pending {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+
+    .status-approved {
+      background: var(--light-green);
+      color: var(--white);
+    }
+
+    .status-rejected {
+      background: #c41e3a;
+      color: var(--white);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-orange));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .user-dept {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-view {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+
+    .btn-view:hover {
+      background: var(--light-green);
+    }
+
+    .btn-approve {
+      background: var(--light-green);
+      color: var(--white);
+    }
+
+    .btn-approve:hover {
+      background: var(--primary-green);
+    }
+
+    .btn-reject {
+      background: #c41e3a;
+      color: var(--white);
+    }
+
+    .btn-reject:hover {
+      background: #a01629;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-light);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .tracking-table {
+        font-size: 0.8rem;
+      }
+      
+      .tracking-table th,
+      .tracking-table td {
+        padding: 0.8rem 0.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .tracking-container {
+        padding: 1rem;
+      }
+
+      .tracking-header {
+        padding: 2rem 1rem;
+      }
+
+      .tracking-header h1 {
+        font-size: 2rem;
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .tracking-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .tracking-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .tracking-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="tracking-container">
+    <div class="tracking-header">
+      <h1>🔍 Leave Tracking Center</h1>
+      <p>Monitor and track all leave requests across your organization</p>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-header">
+        <span>🎯</span>
+        <h3>Filter & Search</h3>
+      </div>
+      
+      <form method="GET" id="filterForm">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label class="filter-label">Search User</label>
+            <input type="text" name="search" class="filter-input" placeholder="Enter username..." value="{{ request.GET.search }}">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Leave Type</label>
+            <select name="leave_type" class="filter-input">
+              <option value="">All Types</option>
+              <option value="sick" {% if request.GET.leave_type == 'sick' %}selected{% endif %}>Sick Leave</option>
+              <option value="vacation" {% if request.GET.leave_type == 'vacation' %}selected{% endif %}>Vacation</option>
+              <option value="personal" {% if request.GET.leave_type == 'personal' %}selected{% endif %}>Personal</option>
+              <option value="emergency" {% if request.GET.leave_type == 'emergency' %}selected{% endif %}>Emergency</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Date From</label>
+            <input type="date" name="date_from" class="filter-input" value="{{ request.GET.date_from }}">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Date To</label>
+            <input type="date" name="date_to" class="filter-input" value="{{ request.GET.date_to }}">
+          </div>
+        </div>
+        
+        <div class="filter-buttons">
+          <button type="button" class="filter-btn active" onclick="filterByStatus('all')">All Requests</button>
+          <button type="button" class="filter-btn" onclick="filterByStatus('pending')">Pending</button>
+          <button type="button" class="filter-btn" onclick="filterByStatus('approved')">Approved</button>
+          <button type="button" class="filter-btn" onclick="filterByStatus('rejected')">Rejected</button>
+          <button type="submit" class="filter-btn secondary">🔍 Apply Filters</button>
+          <a href="{% url 'admin_tracking' %}" class="filter-btn secondary">🔄 Reset</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="tracking-stats">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-number">{{ total_requests|default:0 }}</div>
+        <div class="stat-label">Total Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-number">{{ pending_requests|default:0 }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-number">{{ approved_requests|default:0 }}</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">❌</div>
+        <div class="stat-number">{{ rejected_requests|default:0 }}</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-number">{{ this_month_requests|default:0 }}</div>
+        <div class="stat-label">This Month</div>
+      </div>
+    </div>
+
+    <div class="tracking-content">
+      <div class="content-header">
+        <h3>📋 Leave Requests Overview</h3>
+      </div>
+      
+      {% if leave_requests %}
+        <table class="tracking-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Leave Type</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Days</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for request in leave_requests %}
+            <tr data-status="{{ request.status }}">
+              <td>
+                <div class="user-info">
+                  <div class="user-avatar">
+                    {{ request.user.username|first|upper }}
+                  </div>
+                  <div class="user-details">
+                    <div class="user-name">{{ request.user.username }}</div>
+                    <div class="user-dept">{{ request.user.department|default:"No Dept" }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ request.get_leave_type_display }}</td>
+              <td>{{ request.start_date|date:"M d, Y" }}</td>
+              <td>{{ request.end_date|date:"M d, Y" }}</td>
+              <td>{{ request.days_count }}</td>
+              <td>
+                <span class="status-badge status-{{ request.status }}">
+                  {{ request.get_status_display }}
+                </span>
+              </td>
+              <td>{{ request.submitted_on|date:"M d, Y" }}</td>
+              <td>
+                <div class="action-buttons">
+                  {% if request.status == 'pending' %}
+                    <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="approved">
+                      <button type="submit" class="action-btn btn-approve" title="Approve">✓</button>
+                    </form>
+                    <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="rejected">
+                      <button type="submit" class="action-btn btn-reject" title="Reject">✗</button>
+                    </form>
+                  {% endif %}
+                  <button class="action-btn btn-view" data-request-id="{{ request.id }}" title="View Details">👁️</button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <h4>No Leave Requests Found</h4>
+          <p>No leave requests match your current filters</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function filterByStatus(status) {
+      const rows = document.querySelectorAll('tbody tr');
+      const buttons = document.querySelectorAll('.filter-btn:not(.secondary)');
+      
+      // Update button states
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Filter rows
+      rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        if (status === 'all' || rowStatus === status) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto-submit form on filter changes
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add event listeners for view buttons
+      document.querySelectorAll('.btn-view').forEach(button => {
+        button.addEventListener('click', function() {
+          const requestId = this.getAttribute('data-request-id');
+          alert('View details for request ID: ' + requestId);
+        });
+      });
+
+      // Auto-submit form on filter changes
+      document.querySelectorAll('.filter-input').forEach(input => {
+        input.addEventListener('change', function() {
+          if (this.value) {
+            document.getElementById('filterForm').submit();
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

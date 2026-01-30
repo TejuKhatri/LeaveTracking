@@ -5,11 +5,18 @@
 
 {% block extra_css %}
 <style>
+    /* Full Screen Layout */
+    .full-container {
+        max-width: 100%;
+        margin: 1rem;
+        padding: 0 1rem;
+    }
+
     .page-header {
         background: var(--white);
         padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px var(--shadow);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px var(--shadow);
         margin-bottom: 2rem;
         text-align: center;
     }
@@ -17,17 +24,51 @@
     .page-header h1 {
         color: var(--primary-green);
         margin-bottom: 0.5rem;
+        font-size: 2.2rem;
     }
 
     .page-header p {
         color: var(--text-light);
+        font-size: 1rem;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px var(--shadow);
+        transition: transform 0.3s;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-3px);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-green);
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        margin-top: 0.3rem;
+        font-size: 0.9rem;
     }
 
     .filter-section {
         background: var(--white);
         padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px var(--shadow);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px var(--shadow);
         margin-bottom: 2rem;
     }
 
@@ -39,7 +80,7 @@
     }
 
     .filter-btn {
-        padding: 0.6rem 1.2rem;
+        padding: 0.8rem 1.5rem;
         border: 2px solid var(--border);
         background: var(--white);
         color: var(--text-dark);
@@ -47,26 +88,29 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s;
+        font-size: 0.9rem;
     }
 
     .filter-btn:hover, .filter-btn.active {
         background: var(--primary-green);
         color: var(--white);
         border-color: var(--primary-green);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow);
     }
 
     .history-container {
         background: var(--white);
         padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px var(--shadow);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px var(--shadow);
     }
 
     .request-card {
         background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
         padding: 1.5rem;
         border-radius: 12px;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         border-left: 4px solid var(--primary-green);
         transition: transform 0.3s;
     }
@@ -143,6 +187,7 @@
 
     .request-details p {
         margin: 0.3rem 0;
+        font-size: 0.9rem;
     }
 
     .empty-state {
@@ -159,57 +204,80 @@
     .empty-state h3 {
         color: var(--primary-green);
         margin-bottom: 0.5rem;
+        font-size: 1.5rem;
     }
 
-    .stats-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
+    .empty-state p {
+        font-size: 1rem;
     }
 
-    .stat-box {
-        background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
-        padding: 1.5rem;
-        border-radius: 12px;
-        text-align: center;
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .full-container {
+            margin: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .filter-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .filter-btn {
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+        }
     }
 
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--primary-green);
-    }
+    @media (max-width: 480px) {
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
 
-    .stat-label {
-        color: var(--text-light);
-        margin-top: 0.3rem;
+        .request-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="full-container">
     <div class="page-header">
-        <h1>📊 Leave Request History</h1>
+        <h1>Leave Request History</h1>
         <p>View and track all {% if user.role == 'admin' %}leave requests{% else %}your leave requests{% endif %}</p>
     </div>
 
     <div class="stats-row">
         <div class="stat-box">
-            <div class="stat-number">{{ leave_requests.count }}</div>
+            <div class="stat-number">{{ total_count }}</div>
             <div class="stat-label">Total Requests</div>
         </div>
         <div class="stat-box">
-            <div class="stat-number">{{ leave_requests|length|add:0 }}</div>
+            <div class="stat-number">{{ pending_count }}</div>
             <div class="stat-label">Pending</div>
         </div>
         <div class="stat-box">
-            <div class="stat-number">{{ leave_requests|length|add:0 }}</div>
+            <div class="stat-number">{{ approved_count }}</div>
             <div class="stat-label">Approved</div>
         </div>
         <div class="stat-box">
-            <div class="stat-number">{{ leave_requests|length|add:0 }}</div>
+            <div class="stat-number">{{ rejected_count }}</div>
             <div class="stat-label">Rejected</div>
         </div>
     </div>
@@ -268,16 +336,48 @@ function filterRequests(status) {
     const cards = document.querySelectorAll('.request-card');
     const buttons = document.querySelectorAll('.filter-btn');
     
+    // Remove active class from all buttons
     buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
     event.target.classList.add('active');
     
+    // Show/hide cards based on status
     cards.forEach(card => {
-        if (status === 'all' || card.dataset.status === status) {
+        const cardStatus = card.getAttribute('data-status');
+        if (status === 'all' || cardStatus === status) {
             card.style.display = 'block';
+            card.style.opacity = '1';
+            card.style.transform = 'translateX(0)';
         } else {
             card.style.display = 'none';
         }
     });
+    
+    // Update counts (optional)
+    updateFilterCounts(status);
 }
+
+function updateFilterCounts(activeStatus) {
+    const cards = document.querySelectorAll('.request-card');
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+        if (card.style.display !== 'none') {
+            visibleCount++;
+        }
+    });
+    
+    console.log(`Showing ${visibleCount} requests for status: ${activeStatus}`);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set "All Requests" as active by default
+    const allButton = document.querySelector('.filter-btn');
+    if (allButton) {
+        allButton.classList.add('active');
+    }
+});
 </script>
 {% endblock %}

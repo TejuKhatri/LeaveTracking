@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  User Management - Admin Panel
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* Admin Users Page Styles */
+    .users-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .users-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      color: var(--white);
+      padding: 2.5rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px var(--shadow);
+      margin-bottom: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .users-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .users-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+
+    .users-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-btn {
+      background: var(--white);
+      color: var(--primary-green);
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .header-btn:hover {
+      background: var(--primary-orange);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .users-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px var(--shadow);
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-green), var(--primary-orange));
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .search-section {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .search-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-green);
+    }
+
+    .search-header h3 {
+      font-size: 1.3rem;
+    }
+
+    .search-form {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .search-input {
+      padding: 0.8rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(45, 95, 63, 0.1);
+    }
+
+    .search-btn {
+      padding: 0.8rem 1.5rem;
+      background: var(--primary-green);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .search-btn:hover {
+      background: var(--light-green);
+      transform: translateY(-2px);
+    }
+
+    .reset-btn {
+      padding: 0.8rem 1.5rem;
+      background: var(--primary-orange);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .reset-btn:hover {
+      background: var(--light-orange);
+      transform: translateY(-2px);
+    }
+
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .user-card {
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 6px 20px var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .user-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .user-card-header {
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-orange));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto 1rem;
+      border: 4px solid var(--white);
+      box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    .user-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary-green);
+      margin-bottom: 0.3rem;
+    }
+
+    .user-role {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .role-admin {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+
+    .role-user {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+
+    .user-card-body {
+      padding: 1.5rem;
+    }
+
+    .user-info {
+      margin-bottom: 1.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    .info-icon {
+      width: 20px;
+      text-align: center;
+      color: var(--primary-green);
+    }
+
+    .info-text {
+      color: var(--text-dark);
+    }
+
+    .user-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .user-stat {
+      text-align: center;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+      border-radius: 8px;
+    }
+
+    .user-stat-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary-green);
+    }
+
+    .user-stat-label {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .action-btn {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-view {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+
+    .btn-view:hover {
+      background: var(--light-green);
+    }
+
+    .btn-edit {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+
+    .btn-edit:hover {
+      background: var(--light-orange);
+    }
+
+    .btn-delete {
+      background: #c41e3a;
+      color: var(--white);
+    }
+
+    .btn-delete:hover {
+      background: #a01629;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-light);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    /* Status indicators */
+    .status-indicator {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--white);
+    }
+
+    .status-active {
+      background: var(--light-green);
+    }
+
+    .status-inactive {
+      background: #c41e3a;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .users-container {
+        padding: 1rem;
+      }
+
+      .users-header {
+        padding: 2rem 1rem;
+      }
+
+      .users-header h1 {
+        font-size: 2rem;
+      }
+
+      .users-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .search-form {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .users-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .users-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="users-container">
+    <div class="users-header">
+      <h1>👥 User Management Center</h1>
+      <p>Manage all users and administrators in your organization</p>
+      <div class="header-actions">
+        <a href="{% url 'create_admin' %}" class="header-btn">
+          <span>👨‍💼</span>
+          Create Admin
+        </a>
+        <a href="{% url 'admin_requests' %}" class="header-btn">
+          <span>📊</span>
+          Requests Dashboard
+        </a>
+        <a href="{% url 'admin_tracking' %}" class="header-btn">
+          <span>🔍</span>
+          Track Leaves
+        </a>
+      </div>
+    </div>
+
+    <div class="users-stats">
+      <div class="stat-card">
+        <span class="stat-icon">👤</span>
+        <div class="stat-number">{{ total_users|default:0 }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">👨‍💼</span>
+        <div class="stat-number">{{ admin_count|default:0 }}</div>
+        <div class="stat-label">Administrators</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">👨‍💻</span>
+        <div class="stat-number">{{ user_count|default:0 }}</div>
+        <div class="stat-label">Regular Users</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">🆕</span>
+        <div class="stat-number">{{ new_users_count|default:0 }}</div>
+        <div class="stat-label">New This Month</div>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <div class="search-header">
+        <span>🔍</span>
+        <h3>Search Users</h3>
+      </div>
+      
+      <form method="GET" class="search-form">
+        <input type="text" name="search" class="search-input" 
+               placeholder="Search by username, email, or department..." 
+               value="{{ request.GET.search }}">
+        <button type="submit" class="search-btn">🔍 Search</button>
+        <a href="{% url 'admin_users' %}" class="reset-btn">🔄 Reset</a>
+      </form>
+    </div>
+
+    <div class="users-grid">
+      {% if users %}
+        {% for user in users %}
+          <div class="user-card">
+            <div class="user-card-header">
+              <div class="status-indicator {% if user.is_active %}status-active{% else %}status-inactive{% endif %}"></div>
+              <div class="user-avatar">
+                {{ user.username|first|upper }}
+              </div>
+              <div class="user-name">{{ user.username }}</div>
+              <span class="user-role role-{{ user.role }}">{{ user.get_role_display }}</span>
+            </div>
+            
+            <div class="user-card-body">
+              <div class="user-info">
+                <div class="info-item">
+                  <span class="info-icon">📧</span>
+                  <span class="info-text">{{ user.email|default:"No email" }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon">📱</span>
+                  <span class="info-text">{{ user.phone|default:"No phone" }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon">🏢</span>
+                  <span class="info-text">{{ user.department|default:"No department" }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon">📅</span>
+                  <span class="info-text">Joined {{ user.date_joined|date:"M d, Y" }}</span>
+                </div>
+              </div>
+
+              {% if user.role == 'user' %}
+                <div class="user-stats">
+                  <div class="user-stat">
+                    <div class="user-stat-number">{{ user.total_requests|default:0 }}</div>
+                    <div class="user-stat-label">Total</div>
+                  </div>
+                  <div class="user-stat">
+                    <div class="user-stat-number">{{ user.pending_requests|default:0 }}</div>
+                    <div class="user-stat-label">Pending</div>
+                  </div>
+                  <div class="user-stat">
+                    <div class="user-stat-number">{{ user.approved_requests|default:0 }}</div>
+                    <div class="user-stat-label">Approved</div>
+                  </div>
+                </div>
+              {% endif %}
+
+              <div class="user-actions">
+                <button class="action-btn btn-view" data-user-id="{{ user.id }}" title="View User">
+                  <span>👁️</span> View
+                </button>
+                <button class="action-btn btn-edit" data-user-id="{{ user.id }}" title="Edit User">
+                  <span>✏️</span> Edit
+                </button>
+                {% if user.id != request.user.id %}
+                  <button class="action-btn btn-delete" data-user-id="{{ user.id }}" data-username="{{ user.username }}" title="Delete User">
+                    <span>🗑️</span> Delete
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">👥</div>
+          <h4>No Users Found</h4>
+          <p>{% if request.GET.search %}No users match your search criteria{% else %}No users have been created yet{% endif %}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    // Auto-focus search input and add event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-input');
+      if (searchInput && !searchInput.value) {
+        searchInput.focus();
+      }
+
+      // Add event listeners for user action buttons
+      document.querySelectorAll('.btn-view').forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          alert('View user details for ID: ' + userId);
+        });
+      });
+
+      document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          alert('Edit user functionality would be implemented here for ID: ' + userId);
+        });
+      });
+
+      document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          const username = this.getAttribute('data-username');
+          if (confirm('Are you sure you want to delete user "' + username + '"? This action cannot be undone.')) {
+            alert('Delete user functionality would be implemented here for ID: ' + userId);
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

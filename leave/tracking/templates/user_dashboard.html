@@ -1,4 +1,3 @@
-<!-- khora/templates/user_dashboard.html -->
 {% extends 'base.html' %}
 
 {% block title %}
@@ -7,26 +6,36 @@
 
 {% block extra_css %}
   <style>
+    /* Full Screen Layout */
+    .full-container {
+      max-width: 100%;
+      margin: 1rem;
+      padding: 0 1rem;
+    }
+
     .dashboard-header {
       background: var(--white);
       padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px var(--shadow);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
       margin-bottom: 2rem;
+      text-align: center;
     }
     
     .dashboard-header h1 {
       color: var(--primary-green);
       margin-bottom: 0.5rem;
+      font-size: 2.2rem;
     }
     
     .dashboard-header p {
       color: var(--text-light);
+      font-size: 1rem;
     }
     
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1.5rem;
       margin-bottom: 2rem;
     }
@@ -35,73 +44,113 @@
       background: var(--white);
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 5px 20px var(--shadow);
-      border-left: 4px solid var(--primary-green);
+      box-shadow: 0 4px 15px var(--shadow);
+      text-align: center;
       transition: transform 0.3s;
     }
     
     .stat-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
     }
     
     .stat-card.pending {
-      border-left-color: var(--primary-orange);
+      border-left: 4px solid var(--primary-orange);
     }
     
     .stat-card.approved {
-      border-left-color: var(--light-green);
+      border-left: 4px solid var(--light-green);
     }
     
     .stat-card.rejected {
-      border-left-color: #c41e3a;
+      border-left: 4px solid #c41e3a;
     }
     
     .stat-number {
       font-size: 2.5rem;
       font-weight: bold;
       color: var(--primary-green);
+      margin-bottom: 0.5rem;
     }
     
     .stat-label {
       color: var(--text-light);
-      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
     }
     
     .actions-section {
       background: var(--white);
       padding: 1.5rem;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px var(--shadow);
-      margin-bottom: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
+      height: fit-content;
     }
     
     .actions-section h2 {
       color: var(--primary-green);
       margin-bottom: 1rem;
+      font-size: 1.4rem;
     }
     
     .action-buttons {
       display: flex;
+      flex-direction: column;
       gap: 1rem;
-      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s;
+      display: block;
+    }
+
+    .action-btn.primary {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+
+    .action-btn.primary:hover {
+      background: var(--light-green);
+      transform: translateY(-2px);
+    }
+
+    .action-btn.secondary {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--light-orange);
+      transform: translateY(-2px);
     }
     
     .requests-section {
       background: var(--white);
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px var(--shadow);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
     }
     
     .requests-section h2 {
       color: var(--primary-green);
       margin-bottom: 1.5rem;
+      font-size: 1.4rem;
     }
     
     .request-card {
       background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
       padding: 1.5rem;
-      border-radius: 12px;
+      border-radius: 10px;
       margin-bottom: 1rem;
       border-left: 4px solid var(--primary-green);
     }
@@ -146,10 +195,12 @@
     .request-details {
       color: var(--text-dark);
       margin-bottom: 1rem;
+      line-height: 1.6;
     }
     
     .request-details p {
       margin: 0.3rem 0;
+      font-size: 0.9rem;
     }
     
     .request-actions {
@@ -160,7 +211,7 @@
     
     .btn-small {
       padding: 0.5rem 1rem;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     
     .btn-danger {
@@ -182,79 +233,112 @@
       font-size: 4rem;
       margin-bottom: 1rem;
     }
+    
+    .empty-state h3 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .full-container {
+        margin: 0.5rem;
+        padding: 0 0.5rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .dashboard-header {
+        padding: 1.5rem;
+      }
+
+      .dashboard-header h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="container">
+  <div class="full-container">
     <div class="dashboard-header">
       <h1>Welcome, {{ user.username }}! 👋</h1>
-      <p>Manage your leave requests and track their status here</p>
+      <p>Manage your leave requests easily</p>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card pending">
         <div class="stat-number">{{ pending_count }}</div>
-        <div class="stat-label">Pending Requests</div>
+        <div class="stat-label">Pending</div>
       </div>
       <div class="stat-card approved">
         <div class="stat-number">{{ approved_count }}</div>
-        <div class="stat-label">Approved Requests</div>
+        <div class="stat-label">Approved</div>
       </div>
       <div class="stat-card rejected">
         <div class="stat-number">{{ rejected_count }}</div>
-        <div class="stat-label">Rejected Requests</div>
+        <div class="stat-label">Rejected</div>
       </div>
     </div>
 
-    <div class="actions-section">
-      <h2>Quick Actions</h2>
-      <div class="action-buttons">
-        <a href="{% url 'submit_leave' %}" class="btn btn-primary">📝 Submit New Leave</a>
-        <a href="{% url 'leave_history' %}" class="btn btn-secondary">📊 View All History</a>
+    <div class="main-content">
+      <div class="actions-section">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+          <a href="{% url 'submit_leave' %}" class="action-btn primary">📝 Submit Leave</a>
+          <a href="{% url 'leave_history' %}" class="action-btn secondary">📊 View History</a>
+        </div>
       </div>
-    </div>
 
-    <div class="requests-section">
-      <h2>Recent Leave Requests</h2>
-      {% if leave_requests %}
-        {% for request in leave_requests %}
-          <div class="request-card">
-            <div class="request-header">
-              <span class="request-type">{{ request.get_leave_type_display }}</span>
-              <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
-            </div>
-            <div class="request-details">
-              <p>
-                <strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)
-              </p>
-              <p>
-                <strong>📝 Reason:</strong> {{ request.reason }}
-              </p>
-              <p>
-                <strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y H:i' }}
-              </p>
-              {% if request.admin_comment %}
-                <p>
-                  <strong>💬 Admin Comment:</strong> {{ request.admin_comment }}
-                </p>
+      <div class="requests-section">
+        <h2>Recent Requests</h2>
+        {% if leave_requests %}
+          {% for request in leave_requests %}
+            <div class="request-card">
+              <div class="request-header">
+                <span class="request-type">{{ request.get_leave_type_display }}</span>
+                <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+              </div>
+              <div class="request-details">
+                <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
+                <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
+                <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y' }}</p>
+                {% if request.admin_comment %}
+                  <p><strong>💬 Comment:</strong> {{ request.admin_comment }}</p>
+                {% endif %}
+              </div>
+              {% if request.status == 'pending' %}
+                <div class="request-actions">
+                  <a href="{% url 'edit_leave' request.id %}" class="btn btn-primary btn-small">✏️ Edit</a>
+                  <a href="{% url 'delete_leave' request.id %}" class="btn btn-danger btn-small" onclick="return confirm('Delete this request?')">🗑️ Delete</a>
+                </div>
               {% endif %}
             </div>
-            {% if request.status == 'pending' %}
-              <div class="request-actions">
-                <a href="{% url 'edit_leave' request.id %}" class="btn btn-primary btn-small">✏️ Edit</a>
-                <a href="{% url 'delete_leave' request.id %}" class="btn btn-danger btn-small" onclick="return confirm('Are you sure you want to delete this leave request?')">🗑️ Delete</a>
-              </div>
-            {% endif %}
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3>No Requests Yet</h3>
+            <p>Click "Submit Leave" to create your first request</p>
           </div>
-        {% endfor %}
-      {% else %}
-        <div class="empty-state">
-          <div class="empty-state-icon">📭</div>
-          <h3>No Leave Requests Yet</h3>
-          <p>Click "Submit New Leave" to create your first request</p>
-        </div>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
   </div>
 {% endblock %}

@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Admin Dashboard - Leave Management System
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* Clean Admin Dashboard Styles */
+    .admin-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      color: var(--white);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .admin-header h1 {
+      margin-bottom: 0.5rem;
+      font-size: 2.2rem;
+      font-weight: 600;
+    }
+    
+    .admin-header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .admin-btn {
+      background: var(--white);
+      color: var(--primary-green);
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .admin-btn:hover {
+      background: var(--primary-orange);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+    }
+    
+    .stat-card.pending {
+      border-left: 4px solid var(--primary-orange);
+    }
+    
+    .stat-card.approved {
+      border-left: 4px solid var(--light-green);
+    }
+    
+    .stat-card.rejected {
+      border-left: 4px solid #c41e3a;
+    }
+
+    .stat-card.users {
+      border-left: 4px solid var(--primary-green);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    .tabs-section {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
+      overflow: hidden;
+    }
+    
+    .tabs {
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .tab-button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      background: transparent;
+      color: var(--text-dark);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .tab-button:hover {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+    
+    .tab-button.active {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+    
+    .tab-content {
+      padding: 1.5rem;
+      display: none;
+      min-height: 300px;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content h3 {
+      color: var(--primary-green);
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+    }
+    
+    .request-card {
+      background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--primary-green);
+    }
+    
+    .request-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .request-user {
+      font-weight: 600;
+      color: var(--primary-green);
+      font-size: 1.1rem;
+    }
+    
+    .status-badge {
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .status-pending {
+      background: var(--primary-orange);
+      color: var(--white);
+    }
+    
+    .status-approved {
+      background: var(--light-green);
+      color: var(--white);
+    }
+    
+    .status-rejected {
+      background: #c41e3a;
+      color: var(--white);
+    }
+    
+    .request-details {
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    
+    .request-details p {
+      margin: 0.3rem 0;
+      font-size: 0.9rem;
+    }
+    
+    .request-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .btn-approve {
+      background: var(--light-green);
+      color: var(--white);
+    }
+
+    .btn-approve:hover {
+      background: var(--primary-green);
+    }
+    
+    .btn-reject {
+      background: #c41e3a;
+      color: var(--white);
+    }
+
+    .btn-reject:hover {
+      background: #a01629;
+    }
+
+    .btn-delete {
+      background: #6c757d;
+      color: var(--white);
+    }
+
+    .btn-delete:hover {
+      background: #495057;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-light);
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .empty-state h4 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      
+      .tabs {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .admin-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="admin-header">
+      <h1>Admin Dashboard 👨‍💼</h1>
+      <p>Manage leave requests efficiently</p>
+      <div class="admin-actions">
+        <a href="{% url 'create_admin' %}" class="admin-btn">
+          👨‍💼 Create Admin
+        </a>
+        <a href="{% url 'leave_history' %}" class="admin-btn">
+          📊 View History
+        </a>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card pending">
+        <div class="stat-number">{{ pending_requests.count }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card approved">
+        <div class="stat-number">{{ approved_requests.count }}</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card rejected">
+        <div class="stat-number">{{ rejected_requests.count }}</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+      <div class="stat-card users">
+        <div class="stat-number">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+
+    <div class="tabs-section">
+      <div class="tabs">
+        <button class="tab-button active" onclick="openTab(event, 'pending')">
+          Pending ({{ pending_requests.count }})
+        </button>
+        <button class="tab-button" onclick="openTab(event, 'approved')">
+          Approved ({{ approved_requests.count }})
+        </button>
+        <button class="tab-button" onclick="openTab(event, 'rejected')">
+          Rejected ({{ rejected_requests.count }})
+        </button>
+      </div>
+
+      <div id="pending" class="tab-content active">
+        <h3>⏳ Pending Requests</h3>
+        {% if pending_requests %}
+          {% for request in pending_requests %}
+            <div class="request-card">
+              <div class="request-header">
+                <span class="request-user">👤 {{ request.user.username }}</span>
+                <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+              </div>
+              <div class="request-details">
+                <p><strong>📋 Type:</strong> {{ request.get_leave_type_display }}</p>
+                <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
+                <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
+                <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y' }}</p>
+              </div>
+              <div class="request-actions">
+                <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="approved" />
+                  <button type="submit" class="btn-small btn-approve">✓ Approve</button>
+                </form>
+                <form method="POST" action="{% url 'update_leave_status' request.id %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="rejected" />
+                  <button type="submit" class="btn-small btn-reject">✗ Reject</button>
+                </form>
+                <a href="{% url 'delete_leave' request.id %}" class="btn-small btn-delete" onclick="return confirm('Delete this request?')">🗑️ Delete</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">✅</div>
+            <h4>All Caught Up!</h4>
+            <p>No pending requests to review</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div id="approved" class="tab-content">
+        <h3>✅ Approved Requests</h3>
+        {% if approved_requests %}
+          {% for request in approved_requests %}
+            <div class="request-card">
+              <div class="request-header">
+                <span class="request-user">👤 {{ request.user.username }}</span>
+                <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+              </div>
+              <div class="request-details">
+                <p><strong>📋 Type:</strong> {{ request.get_leave_type_display }}</p>
+                <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
+                <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
+                <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y' }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h4>No Approved Requests</h4>
+            <p>No requests have been approved yet</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div id="rejected" class="tab-content">
+        <h3>❌ Rejected Requests</h3>
+        {% if rejected_requests %}
+          {% for request in rejected_requests %}
+            <div class="request-card">
+              <div class="request-header">
+                <span class="request-user">👤 {{ request.user.username }}</span>
+                <span class="status-badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+              </div>
+              <div class="request-details">
+                <p><strong>📋 Type:</strong> {{ request.get_leave_type_display }}</p>
+                <p><strong>📅 Period:</strong> {{ request.start_date }} to {{ request.end_date }} ({{ request.days_count }} days)</p>
+                <p><strong>📝 Reason:</strong> {{ request.reason }}</p>
+                <p><strong>🕒 Submitted:</strong> {{ request.submitted_on|date:'M d, Y' }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h4>No Rejected Requests</h4>
+            <p>No requests have been rejected</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openTab(evt, tabName) {
+      var i, tabcontent, tabbuttons;
+      
+      tabcontent = document.getElementsByClassName('tab-content');
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove('active');
+      }
+      
+      tabbuttons = document.getElementsByClassName('tab-button');
+      for (i = 0; i < tabbuttons.length; i++) {
+        tabbuttons[i].classList.remove('active');
+      }
+      
+      document.getElementById(tabName).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+  </script>
+{% endblock %}
