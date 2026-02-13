@@ -1,0 +1,190 @@
+<!-- khora/templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home - Leave Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--shadow);
+        margin: 2rem auto;
+        max-width: 900px;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        color: var(--primary-green);
+        margin-bottom: 1rem;
+    }
+
+    .hero h1 span {
+        color: var(--primary-orange);
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .feature-card {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px var(--shadow);
+        transition: transform 0.3s;
+        text-align: center;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+    }
+
+    .feature-card p {
+        color: var(--text-light);
+    }
+
+    .stats-section {
+        background: var(--white);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--shadow);
+        margin: 3rem 0;
+        text-align: center;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, var(--pale-green), var(--pale-orange));
+        border-radius: 12px;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary-green);
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h1>Welcome to <span>LeaveTrack</span></h1>
+        <p>Simplify your leave management process. Submit, track, and manage leave requests effortlessly with our modern system.</p>
+        <div class="hero-buttons">
+            {% if user.is_authenticated %}
+                {% if user.role == 'admin' %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                {% else %}
+                    <a href="{% url 'user_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                    <a href="{% url 'submit_leave' %}" class="btn btn-secondary">Submit Leave</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+                <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3>Easy Submission</h3>
+            <p>Submit leave requests in seconds with our intuitive form interface</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Quick Approvals</h3>
+            <p>Admins can review and approve requests with just a few clicks</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Track Status</h3>
+            <p>Monitor your leave requests in real-time with detailed status updates</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔔</div>
+            <h3>Stay Updated</h3>
+            <p>Get instant notifications when your request status changes</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📅</div>
+            <h3>History Tracking</h3>
+            <p>View complete history of all your leave requests in one place</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">✏️</div>
+            <h3>Edit Requests</h3>
+            <p>Modify pending requests before they're reviewed by admin</p>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2 style="color: var(--primary-green); margin-bottom: 1rem;">Why Choose LeaveTrack?</h2>
+        <p style="color: var(--text-light); max-width: 600px; margin: 0 auto;">Our system is designed to make leave management hassle-free for both employees and administrators</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Paperless</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">⚡</div>
+                <div class="stat-label">Fast Processing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">🔒</div>
+                <div class="stat-label">Secure</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Access</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

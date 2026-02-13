@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Edit Profile - Leave Management System
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .edit-profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--shadow);
+    }
+    
+    .edit-profile-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .edit-profile-header h1 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .edit-profile-header p {
+      color: var(--text-light);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+      background: var(--white);
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(45, 95, 63, 0.1);
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    
+    .btn-save {
+      background: var(--primary-green);
+      color: var(--white);
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-save:hover {
+      background: var(--light-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    .btn-cancel {
+      background: var(--text-light);
+      color: var(--white);
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+    
+    .form-help {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-top: 0.3rem;
+    }
+    
+    .required-field {
+      color: #dc3545;
+    }
+    
+    .profile-avatar-small {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 2rem;
+      color: var(--white);
+      font-weight: bold;
+    }
+    
+    .errorlist {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0;
+    }
+    
+    .errorlist li {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .form-group.error .form-input {
+      border-color: #dc3545;
+    }
+    
+    .form-group.error .form-input:focus {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="edit-profile-container">
+    <div class="edit-profile-header">
+      <div class="profile-avatar-small">
+        {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper|default:"" }}
+      </div>
+      <h1>✏️ Edit Profile</h1>
+      <p>Update your personal information</p>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="form-group {% if form.first_name.errors %}error{% endif %}">
+        <label for="{{ form.first_name.id_for_label }}">First Name</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}
+          <ul class="errorlist">
+            {% for error in form.first_name.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <div class="form-help">Your first name as it should appear in the system</div>
+      </div>
+
+      <div class="form-group {% if form.last_name.errors %}error{% endif %}">
+        <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+        {{ form.last_name }}
+        {% if form.last_name.errors %}
+          <ul class="errorlist">
+            {% for error in form.last_name.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <div class="form-help">Your last name as it should appear in the system</div>
+      </div>
+
+      <div class="form-group {% if form.email.errors %}error{% endif %}">
+        <label for="{{ form.email.id_for_label }}">Email Address <span class="required-field">*</span></label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <ul class="errorlist">
+            {% for error in form.email.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <div class="form-help">Used for notifications and password reset</div>
+      </div>
+
+      <div class="form-group {% if form.phone.errors %}error{% endif %}">
+        <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}
+          <ul class="errorlist">
+            {% for error in form.phone.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <div class="form-help">Optional contact number for emergencies</div>
+      </div>
+
+      <div class="form-group {% if form.department.errors %}error{% endif %}">
+        <label for="{{ form.department.id_for_label }}">Department</label>
+        {{ form.department }}
+        {% if form.department.errors %}
+          <ul class="errorlist">
+            {% for error in form.department.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <div class="form-help">Your department or team within the organization</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save">💾 Save Changes</button>
+        <a href="{% url 'profile' %}" class="btn-cancel">❌ Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

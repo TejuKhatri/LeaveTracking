@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Contact Us - Leave Management System
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .contact-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .contact-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--shadow);
+    }
+    
+    .contact-header h1 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .contact-header p {
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+    
+    .contact-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    .contact-info, .contact-form {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--shadow);
+    }
+    
+    .contact-info h2, .contact-form h2 {
+      color: var(--primary-green);
+      margin-bottom: 1.5rem;
+    }
+    
+    .contact-method {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      background: var(--pale-green);
+      border-left: 4px solid var(--primary-green);
+    }
+    
+    .contact-method.support {
+      background: var(--pale-orange);
+      border-left-color: var(--primary-orange);
+    }
+    
+    .contact-method.emergency {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+    }
+    
+    .contact-icon {
+      font-size: 1.5rem;
+      width: 40px;
+      text-align: center;
+    }
+    
+    .contact-details h3 {
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+    }
+    
+    .contact-details p {
+      color: var(--text-light);
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+      background: var(--white);
+      font-family: inherit;
+    }
+    
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(45, 95, 63, 0.1);
+    }
+    
+    .btn-submit {
+      background: var(--primary-green);
+      color: var(--white);
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+    }
+    
+    .btn-submit:hover {
+      background: var(--light-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    .office-hours {
+      background: var(--pale-green);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+      border-left: 4px solid var(--primary-green);
+    }
+    
+    .office-hours h3 {
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+    }
+    
+    .hours-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .hours-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0;
+      color: var(--text-light);
+    }
+    
+    .faq-section {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--shadow);
+      margin-top: 2rem;
+      grid-column: 1 / -1;
+    }
+    
+    .faq-section h2 {
+      color: var(--primary-green);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .faq-item {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background: var(--pale-green);
+    }
+    
+    .faq-question {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .faq-answer {
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 768px) {
+      .contact-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="contact-container">
+    <div class="contact-header">
+      <h1>📞 Contact Us</h1>
+      <p>We're here to help! Get in touch with our support team</p>
+    </div>
+
+    <div class="contact-content">
+      <div class="contact-info">
+        <h2>📧 Get in Touch</h2>
+        
+        <div class="contact-method">
+          <div class="contact-icon">📧</div>
+          <div class="contact-details">
+            <h3>Email Support</h3>
+            <p>support@leavetrack.com</p>
+            <p>Response within 24 hours</p>
+          </div>
+        </div>
+
+        <div class="contact-method support">
+          <div class="contact-icon">💬</div>
+          <div class="contact-details">
+            <h3>Help Desk</h3>
+            <p>+1 (555) 123-4567</p>
+            <p>Monday - Friday, 9:00 AM - 5:00 PM</p>
+          </div>
+        </div>
+
+        <div class="contact-method emergency">
+          <div class="contact-icon">🚨</div>
+          <div class="contact-details">
+            <h3>Emergency Support</h3>
+            <p>Contact your HR Department</p>
+            <p>For urgent leave-related issues</p>
+          </div>
+        </div>
+
+        <div class="office-hours">
+          <h3>🕒 Support Hours</h3>
+          <ul class="hours-list">
+            <li><span>Monday - Friday</span><span>9:00 AM - 5:00 PM</span></li>
+            <li><span>Saturday</span><span>10:00 AM - 2:00 PM</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Holidays</span><span>Limited Support</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h2>📝 Send us a Message</h2>
+        <form method="post" onsubmit="handleFormSubmit(event)">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject" class="form-input" required>
+              <option value="">Select a topic</option>
+              <option value="technical">Technical Issue</option>
+              <option value="account">Account Problem</option>
+              <option value="leave">Leave Request Help</option>
+              <option value="feature">Feature Request</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" class="form-textarea" placeholder="Please describe your issue or question in detail..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">📤 Send Message</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="faq-section">
+      <h2>❓ Frequently Asked Questions</h2>
+      
+      <div class="faq-item">
+        <div class="faq-question">How do I submit a leave request?</div>
+        <div class="faq-answer">Navigate to your dashboard and click "Submit Leave" or use the navigation menu. Fill out the form with your leave details and submit for approval.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I edit my leave request after submission?</div>
+        <div class="faq-answer">Yes, you can edit leave requests that are still in "Pending" status. Once approved or rejected, requests cannot be modified.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How do I reset my password?</div>
+        <div class="faq-answer">Click "Forgot Password" on the login page and enter your email address. You'll receive instructions to reset your password.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Who can I contact for urgent leave matters?</div>
+        <div class="faq-answer">For urgent leave-related issues, contact your HR department directly. For system technical issues, use our support email or phone number.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How do I update my profile information?</div>
+        <div class="faq-answer">Go to your Profile page from the navigation menu and click "Edit Profile" to update your personal information.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      alert('Thank you for your message! We will get back to you within 24 hours. For urgent matters, please contact your HR department directly.');
+      event.target.reset();
+    }
+  </script>
+{% endblock %}
